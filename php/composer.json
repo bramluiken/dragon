@@ -1,0 +1,12 @@
+{
+    "name": "dragon/api",
+    "description": "PHP orchestration for dragon",
+    "require": {
+        "php": ">=8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dragon\\": "api/"
+        }
+    }
+}

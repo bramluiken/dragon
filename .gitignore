@@ -1,0 +1,9 @@
+# Rust
+/target
+
+# PHP
+/vendor
+
+# General
+*.log
+.DS_Store
