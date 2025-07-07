@@ -155,3 +155,5 @@ dRAGon/
 * Introduced a simple multi-layer `Transformer` composed of decoder blocks (`core/src/transformer.rs`).
 * Added a basic layer normalization module and integrated it into the decoder blocks (`core/src/layernorm.rs`).
 * Implemented a simple token embedding lookup layer (`core/src/embedding.rs`).
+* Wrapped the embedding and transformer with a final linear layer in a new
+  `Model` struct (`core/src/model.rs`) to enable end-to-end inference.
