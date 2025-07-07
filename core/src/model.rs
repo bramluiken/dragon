@@ -1,4 +1,4 @@
-use crate::{embedding::Embedding, transformer::Transformer, Linear};
+use crate::{embedding::Embedding, transformer::Transformer, Linear, rotary::RotaryEmbedding};
 
 /// End-to-end decoder-only model tying together embedding, transformer and output layer.
 ///
@@ -6,6 +6,7 @@ use crate::{embedding::Embedding, transformer::Transformer, Linear};
 /// acts as an identity function in tests when given small vocab/embedding sizes.
 pub struct Model {
     pub embedding: Embedding,
+    pub positional: RotaryEmbedding,
     pub transformer: Transformer,
     pub output_layer: Linear,
 }
@@ -31,6 +32,7 @@ impl Model {
             .collect::<Vec<_>>();
         Self {
             embedding: Embedding::new(embed_weights),
+            positional: RotaryEmbedding::new(embed_dim),
             transformer: Transformer::new(num_layers, embed_dim, hidden_dim),
             output_layer: Linear::new(output_weights, vec![0.0; vocab_size]),
         }
@@ -39,7 +41,8 @@ impl Model {
     /// Runs the model on token ids and returns logits over the vocabulary.
     pub fn forward(&self, input: &[usize]) -> Vec<Vec<f32>> {
         let embedded = self.embedding.forward(input);
-        let transformed = self.transformer.forward(&embedded);
+        let positioned = self.positional.forward(&embedded);
+        let transformed = self.transformer.forward(&positioned);
         self.output_layer.forward(&transformed)
     }
 }
