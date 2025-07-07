@@ -151,3 +151,4 @@ dRAGon/
 
 * Implemented a naive self-attention layer in Rust (`core/src/attention.rs`) as the first step toward the full decoder.
 * Added a simple two-layer feedforward network (`core/src/feedforward.rs`).
+* Created a minimal decoder block chaining attention and feedforward (`core/src/decoder.rs`).
