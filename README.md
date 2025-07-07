@@ -160,3 +160,4 @@ dRAGon/
 * Added a naive rotary positional embedding module (`core/src/rotary.rs`) and
   integrated it into the `Model`.
 * Introduced a basic command-line inference tool (`core/src/bin/infer.rs`) demonstrating model usage.
+* Added a simple PHP endpoint invoking the Rust inference binary (`php/api/index.php`).
