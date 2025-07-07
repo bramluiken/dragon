@@ -161,3 +161,4 @@ dRAGon/
   integrated it into the `Model`.
 * Introduced a basic command-line inference tool (`core/src/bin/infer.rs`) demonstrating model usage.
 * Added a simple PHP endpoint invoking the Rust inference binary (`php/api/index.php`).
+* Implemented a naive whitespace tokenizer module (`core/src/tokenizer.rs`).
