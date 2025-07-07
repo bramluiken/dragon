@@ -157,3 +157,5 @@ dRAGon/
 * Implemented a simple token embedding lookup layer (`core/src/embedding.rs`).
 * Wrapped the embedding and transformer with a final linear layer in a new
   `Model` struct (`core/src/model.rs`) to enable end-to-end inference.
+* Added a naive rotary positional embedding module (`core/src/rotary.rs`) and
+  integrated it into the `Model`.

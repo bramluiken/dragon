@@ -4,6 +4,7 @@ pub mod feedforward;
 pub mod decoder;
 pub mod transformer;
 pub mod layernorm;
+pub mod rotary;
 pub mod model;
 
 pub fn add(left: u64, right: u64) -> u64 {
