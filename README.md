@@ -146,3 +146,7 @@ dRAGon/
 ✅ **Phase 4:** Integration with RAG system
 
 ---
+
+### Development Progress
+
+* Implemented a naive self-attention layer in Rust (`core/src/attention.rs`) as the first step toward the full decoder.
