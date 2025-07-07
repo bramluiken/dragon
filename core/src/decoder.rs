@@ -1,11 +1,14 @@
 use crate::attention::SelfAttention;
 use crate::feedforward::FeedForward;
+use crate::layernorm::LayerNorm;
 
 /// Simplified decoder block combining self-attention and feedforward layers.
 ///
 /// This block applies self-attention followed by a feedforward network. Both
 /// components use identity weights so the block can be unit tested easily.
 pub struct DecoderBlock {
+    pub ln1: LayerNorm,
+    pub ln2: LayerNorm,
     pub self_attn: SelfAttention,
     pub feedforward: FeedForward,
 }
@@ -14,6 +17,8 @@ impl DecoderBlock {
     /// Creates a new [`DecoderBlock`].
     pub fn new(embed_dim: usize, hidden_dim: usize) -> Self {
         Self {
+            ln1: LayerNorm::new(embed_dim),
+            ln2: LayerNorm::new(embed_dim),
             self_attn: SelfAttention::new(embed_dim),
             feedforward: FeedForward::new(embed_dim, hidden_dim),
         }
@@ -21,8 +26,10 @@ impl DecoderBlock {
 
     /// Runs the block on the provided sequence.
     pub fn forward(&self, input: &[Vec<f32>]) -> Vec<Vec<f32>> {
-        let attn_out = self.self_attn.forward(input);
-        self.feedforward.forward(&attn_out)
+        let norm1 = self.ln1.forward(input);
+        let attn_out = self.self_attn.forward(&norm1);
+        let norm2 = self.ln2.forward(&attn_out);
+        self.feedforward.forward(&norm2)
     }
 }
 

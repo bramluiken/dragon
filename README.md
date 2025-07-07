@@ -153,3 +153,4 @@ dRAGon/
 * Added a simple two-layer feedforward network (`core/src/feedforward.rs`).
 * Created a minimal decoder block chaining attention and feedforward (`core/src/decoder.rs`).
 * Introduced a simple multi-layer `Transformer` composed of decoder blocks (`core/src/transformer.rs`).
+* Added a basic layer normalization module and integrated it into the decoder blocks (`core/src/layernorm.rs`).

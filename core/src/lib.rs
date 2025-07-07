@@ -2,6 +2,7 @@ pub mod attention;
 pub mod feedforward;
 pub mod decoder;
 pub mod transformer;
+pub mod layernorm;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
