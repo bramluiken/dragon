@@ -159,3 +159,4 @@ dRAGon/
   `Model` struct (`core/src/model.rs`) to enable end-to-end inference.
 * Added a naive rotary positional embedding module (`core/src/rotary.rs`) and
   integrated it into the `Model`.
+* Introduced a basic command-line inference tool (`core/src/bin/infer.rs`) demonstrating model usage.
