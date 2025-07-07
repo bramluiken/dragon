@@ -154,3 +154,4 @@ dRAGon/
 * Created a minimal decoder block chaining attention and feedforward (`core/src/decoder.rs`).
 * Introduced a simple multi-layer `Transformer` composed of decoder blocks (`core/src/transformer.rs`).
 * Added a basic layer normalization module and integrated it into the decoder blocks (`core/src/layernorm.rs`).
+* Implemented a simple token embedding lookup layer (`core/src/embedding.rs`).
