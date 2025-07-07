@@ -162,3 +162,4 @@ dRAGon/
 * Introduced a basic command-line inference tool (`core/src/bin/infer.rs`) demonstrating model usage.
 * Added a simple PHP endpoint invoking the Rust inference binary (`php/api/index.php`).
 * Implemented a naive whitespace tokenizer module (`core/src/tokenizer.rs`).
+* Added a CLI to run inference directly on text input (`core/src/bin/infer_text.rs`).
