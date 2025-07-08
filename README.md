@@ -131,8 +131,9 @@ dRAGon/
 ├── php/              # PHP orchestration
 │   ├── api/
 │   ├── composer.json
-├── tokenizer/        # SentencePiece/BPE models
-├── weights/          # Saved model weights
+├── data/             # Data files
+│   ├── tokenizer/    # SentencePiece/BPE models
+│   └── weights/      # Saved model weights
 └── README.md
 ```
 
@@ -188,7 +189,7 @@ dRAGon/
 - [ ] Add FFI bindings so PHP can tokenize directly
 - [ ] Include tests for encode/decode round trips
 - [ ] Support dynamic vocabulary merges during training
-- [ ] Document tokenizer usage in `/tokenizer/README.md`
+- [ ] Document tokenizer usage in `/data/tokenizer/README.md`
 
 ### PHP API & Integration
 - [x] Implement async HTTP server with Swoole/ReactPHP
@@ -202,7 +203,7 @@ dRAGon/
 - [x] Build a dataset loader for large text corpora
 - [ ] Implement shuffling and batching dataloader
 - [ ] Add mixed-precision and gradient accumulation support
-- [ ] Save training checkpoints under `weights/`
+- [ ] Save training checkpoints under `data/weights/`
 - [ ] Provide evaluation metrics and scripts
 - [ ] Document full training workflow
 
