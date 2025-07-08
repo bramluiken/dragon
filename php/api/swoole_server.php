@@ -6,6 +6,8 @@ use Swoole\Http\Server;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 
+require_once __DIR__ . '/middleware.php';
+
 $host = '0.0.0.0';
 $port = 8080;
 
@@ -17,6 +19,19 @@ $server->on('start', function (Server $server) use ($host, $port) {
 
 $server->on('request', function (Request $request, Response $response) {
     $response->header('Content-Type', 'application/json');
+
+    if (!check_auth_header($request->header['authorization'] ?? '')) {
+        $response->status(401);
+        $response->end(json_encode(['error' => 'Unauthorized']));
+        return;
+    }
+
+    $ip = $request->server['remote_addr'] ?? 'unknown';
+    if (!update_rate_limit($ip)) {
+        $response->status(429);
+        $response->end(json_encode(['error' => 'Rate limit exceeded']));
+        return;
+    }
 
     if ($request->server['request_method'] !== 'POST') {
         $response->status(405);

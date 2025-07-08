@@ -14,7 +14,10 @@ $payload = json_encode(['tokens' => array_map('intval', $tokens)], JSON_UNESCAPE
 $ch = curl_init($url);
 curl_setopt_array($ch, [
     CURLOPT_POST => true,
-    CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+    CURLOPT_HTTPHEADER => [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . (getenv('DRAGON_API_KEY') ?: 'secret')
+    ],
     CURLOPT_POSTFIELDS => $payload,
     CURLOPT_RETURNTRANSFER => true,
 ]);

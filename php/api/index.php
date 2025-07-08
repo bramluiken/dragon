@@ -2,7 +2,21 @@
 // Simple HTTP endpoint to run dragon-core inference.
 // Expects JSON: {"tokens": [1,2,3]}
 
+require_once __DIR__ . '/middleware.php';
+
 header('Content-Type: application/json');
+
+if (!check_auth_header($_SERVER['HTTP_AUTHORIZATION'] ?? '')) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Unauthorized']);
+    exit;
+}
+
+if (!update_rate_limit($_SERVER['REMOTE_ADDR'] ?? 'unknown')) {
+    http_response_code(429);
+    echo json_encode(['error' => 'Rate limit exceeded']);
+    exit;
+}
 
 $raw = file_get_contents('php://input');
 if ($raw === false) {

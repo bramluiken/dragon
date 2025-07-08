@@ -19,7 +19,8 @@ const options = {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Content-Length': Buffer.byteLength(data)
+    'Content-Length': Buffer.byteLength(data),
+    'Authorization': 'Bearer ' + (process.env.DRAGON_API_KEY || 'secret')
   }
 };
 
