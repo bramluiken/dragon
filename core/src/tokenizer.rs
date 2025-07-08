@@ -128,4 +128,52 @@ mod tests {
         let ids = tok.encode("xy");
         assert_eq!(ids, vec![0, 0]);
     }
+
+    #[test]
+    fn roundtrip_all_vocab_tokens() {
+        let vocab = vec![
+            "<unk>".into(),
+            "h".into(),
+            "e".into(),
+            "l".into(),
+            "o".into(),
+            "w".into(),
+            "r".into(),
+            "d".into(),
+            "he".into(),
+            "hel".into(),
+            "hell".into(),
+            "hello".into(),
+            "wo".into(),
+            "wor".into(),
+            "worl".into(),
+            "world".into(),
+        ];
+        let merges = vec![
+            ("h".into(), "e".into()),
+            ("he".into(), "l".into()),
+            ("hel".into(), "l".into()),
+            ("hell".into(), "o".into()),
+            ("w".into(), "o".into()),
+            ("wo".into(), "r".into()),
+            ("wor".into(), "l".into()),
+            ("worl".into(), "d".into()),
+        ];
+        let tok = BpeTokenizer::new(vocab.clone(), merges, 0);
+        for token in vocab.iter().skip(1) {
+            let ids = tok.encode(token);
+            let decoded = tok.decode(&ids);
+            assert_eq!(decoded, *token, "token {}", token);
+        }
+    }
+
+    #[test]
+    fn roundtrip_empty_string() {
+        let vocab = vec!["<unk>".into()];
+        let tok = BpeTokenizer::new(vocab, Vec::new(), 0);
+        let ids = tok.encode("");
+        assert!(ids.is_empty());
+        let decoded = tok.decode(&ids);
+        assert_eq!(decoded, "");
+    }
 }
