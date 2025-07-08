@@ -2,6 +2,8 @@
 // Asynchronous HTTP server using Swoole to invoke dragon-core inference.
 // Requires the Swoole PHP extension.
 
+require_once __DIR__ . '/util.php';
+
 use Swoole\Http\Server;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
@@ -18,6 +20,39 @@ $server->on('start', function (Server $server) use ($host, $port) {
 });
 
 $server->on('request', function (Request $request, Response $response) {
+<<<<<< codex/improve-logging-and-error-handling
+    try {
+        if ($request->server['request_method'] !== 'POST') {
+            respond_error($response, 'POST only', 405);
+            return;
+        }
+
+        $data = json_decode($request->rawContent(), true);
+        if (!is_array($data) || !isset($data['tokens']) || !is_array($data['tokens'])) {
+            respond_error($response, 'Expected JSON with "tokens" array', 400);
+            return;
+        }
+
+        $tokens = array_map('intval', $data['tokens']);
+        log_info('Inference request: ' . json_encode($tokens));
+
+        $binary = realpath(__DIR__ . '/../../core/target/debug/infer');
+        if ($binary === false || !is_file($binary)) {
+            respond_error($response, 'Inference binary not found', 500);
+            return;
+        }
+
+        $cmd = escapeshellcmd($binary . ' ' . implode(' ', $tokens));
+        $output = shell_exec($cmd);
+        if ($output === null) {
+            respond_error($response, 'Failed to execute inference binary', 500);
+            return;
+        }
+
+        respond_json($response, ['raw' => $output]);
+    } catch (Throwable $e) {
+        respond_error($response, 'Unhandled error: ' . $e->getMessage(), 500);
+=======
     $response->header('Content-Type', 'application/json');
 
     if (!check_auth_header($request->header['authorization'] ?? '')) {
@@ -44,27 +79,8 @@ $server->on('request', function (Request $request, Response $response) {
         $response->status(400);
         $response->end(json_encode(['error' => 'Expected JSON with "tokens" array']));
         return;
+>>>>>> main
     }
-
-    $tokens = array_map('intval', $data['tokens']);
-    $binary = realpath(__DIR__ . '/../../core/target/debug/infer');
-
-    if ($binary === false || !is_file($binary)) {
-        $response->status(500);
-        $response->end(json_encode(['error' => 'Inference binary not found']));
-        return;
-    }
-
-    $cmd = escapeshellcmd($binary . ' ' . implode(' ', $tokens));
-    $output = shell_exec($cmd);
-
-    if ($output === null) {
-        $response->status(500);
-        $response->end(json_encode(['error' => 'Failed to execute inference binary']));
-        return;
-    }
-
-    $response->end(json_encode(['raw' => $output]));
 });
 
 $server->start();

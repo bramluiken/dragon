@@ -2,6 +2,9 @@
 
 Simple HTTP endpoint that invokes the Rust inference binary.
 
+Both the synchronous and Swoole servers log to the PHP error log and return
+structured JSON error responses.
+
 ## Usage
 
 1. Build the Rust core: from the repo root run `cargo build --bin infer`.
