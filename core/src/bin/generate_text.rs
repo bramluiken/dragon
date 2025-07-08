@@ -1,5 +1,6 @@
 use dragon_core::model::Model;
 use dragon_core::tokenizer::WhitespaceTokenizer;
+use dragon_core::hyperparams::{EMBED_DIM, HIDDEN_DIM, NUM_LAYERS, NUM_HEADS};
 use std::env;
 use std::fs;
 
@@ -34,12 +35,7 @@ fn main() {
     let mut tokens = tokenizer.encode(&prompt);
 
     let vocab_size = vocab.len();
-    let embed_dim = 4;
-    let hidden_dim = 4;
-    let num_layers = 1;
-    let num_heads = 1;
-
-    let model = Model::new(vocab_size, embed_dim, hidden_dim, num_layers, num_heads);
+    let model = Model::new(vocab_size, EMBED_DIM, HIDDEN_DIM, NUM_LAYERS, NUM_HEADS);
     tokens = model.generate(&tokens, steps);
 
     let out_text = tokenizer.decode(&tokens);

@@ -16,6 +16,7 @@ $header = "
 ";
 
 $lib = FFI::cdef($header, realpath(__DIR__ . '/../../core/target/debug/libdragon_core.so'));
+require_once __DIR__ . '/../hyperparams.php';
 
 $tokens = array_map('intval', array_slice($argv, 1));
 if (empty($tokens)) {
@@ -23,7 +24,7 @@ if (empty($tokens)) {
     exit(1);
 }
 
-$handle = $lib->dragon_model_create(16, 4, 4, 1);
+$handle = $lib->dragon_model_create(VOCAB_SIZE, EMBED_DIM, HIDDEN_DIM, NUM_LAYERS);
 
 $in = FFI::new("ulong[".count($tokens)."]", false);
 foreach ($tokens as $i => $t) {

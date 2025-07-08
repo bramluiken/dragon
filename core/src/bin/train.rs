@@ -1,6 +1,7 @@
 use dragon_core::model::Model;
 use dragon_core::tokenizer::WhitespaceTokenizer;
 use dragon_core::loss::cross_entropy;
+use dragon_core::hyperparams::{EMBED_DIM, HIDDEN_DIM, NUM_LAYERS, NUM_HEADS, LEARNING_RATE};
 use std::env;
 use std::fs;
 
@@ -40,13 +41,8 @@ fn main() {
     let targets = &tokens[1..];
 
     let vocab_size = vocab.len();
-    let embed_dim = 4;
-    let hidden_dim = 4;
-    let num_layers = 1;
-    let num_heads = 1;
-
-    let mut model = Model::new(vocab_size, embed_dim, hidden_dim, num_layers, num_heads);
-    let lr = 0.1f32;
+    let mut model = Model::new(vocab_size, EMBED_DIM, HIDDEN_DIM, NUM_LAYERS, NUM_HEADS);
+    let lr = LEARNING_RATE;
 
     for epoch in 0..epochs {
         let embedded = model.embedding.forward(inputs);
@@ -57,7 +53,7 @@ fn main() {
         let loss = cross_entropy(&logits, targets);
         println!("epoch {} loss {}", epoch, loss);
 
-        let mut grad_w = vec![vec![0.0f32; vocab_size]; embed_dim];
+        let mut grad_w = vec![vec![0.0f32; vocab_size]; EMBED_DIM];
         let mut grad_b = vec![0.0f32; vocab_size];
         for (step, &target) in targets.iter().enumerate() {
             let logit = &logits[step];
@@ -67,7 +63,7 @@ fn main() {
             for i in 0..vocab_size {
                 let grad = softmax[i] - if i == target { 1.0 } else { 0.0 };
                 grad_b[i] += grad;
-                for j in 0..embed_dim {
+                for j in 0..EMBED_DIM {
                     grad_w[j][i] += transformed[step][j] * grad;
                 }
             }
@@ -82,7 +78,7 @@ fn main() {
         {
             let weight = model.output_layer.weight_mut();
             for i in 0..vocab_size {
-                for j in 0..embed_dim {
+                for j in 0..EMBED_DIM {
                     weight[j][i] -= lr * grad_w[j][i] / n;
                 }
             }

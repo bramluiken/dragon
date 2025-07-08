@@ -1,6 +1,7 @@
 use dragon_core::model::Model;
 use dragon_core::tokenizer::WhitespaceTokenizer;
 use dragon_core::loss::cross_entropy;
+use dragon_core::hyperparams::{EMBED_DIM, HIDDEN_DIM, NUM_LAYERS, NUM_HEADS};
 use std::env;
 use std::fs;
 
@@ -36,12 +37,7 @@ fn main() {
     let targets = &tokens[1..];
 
     let vocab_size = vocab.len();
-    let embed_dim = 4;
-    let hidden_dim = 4;
-    let num_layers = 1;
-    let num_heads = 1;
-
-    let model = Model::new(vocab_size, embed_dim, hidden_dim, num_layers, num_heads);
+    let model = Model::new(vocab_size, EMBED_DIM, HIDDEN_DIM, NUM_LAYERS, NUM_HEADS);
     let logits = model.forward(inputs);
     let loss = cross_entropy(&logits, targets);
     println!("loss: {}", loss);
