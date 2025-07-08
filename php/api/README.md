@@ -14,3 +14,14 @@ Simple HTTP endpoint that invokes the Rust inference binary.
    curl -X POST -d '{"tokens": [0,1,2]}' http://localhost:8080/index.php
    ```
    The response contains the raw output from the inference binary.
+
+## Async server (Swoole)
+
+If the [Swoole](https://www.swoole.co.uk/) extension is installed you can run
+an asynchronous server:
+
+```bash
+php swoole_server.php
+```
+
+Requests are identical to the `index.php` example.
