@@ -167,3 +167,69 @@ dRAGon/
 * Added a cross-entropy loss module for evaluation (`core/src/loss.rs`).
 * Added a CLI to compute cross-entropy loss for a text prompt (`core/src/bin/eval_loss.rs`).
 * Added a CLI to compute perplexity for a text prompt (`core/src/bin/eval_perplexity.rs`).
+
+## \ud83d\udcdd Development To-Do List
+
+### Core (Rust)
+- [ ] Replace naive attention with optimized multi-head attention
+- [ ] Integrate BLAS-backed matrix multiplication for speed
+- [ ] Expose FFI-friendly API for PHP integration
+- [ ] Support model serialization to `.safetensors`
+- [ ] Implement optional quantization for lightweight inference
+- [ ] Add training loop using `burn` or custom autograd
+
+### Tokenizer
+- [ ] Switch from whitespace tokenizer to SentencePiece/BPE
+- [ ] Provide scripts to train and update vocabularies
+- [ ] Add FFI bindings so PHP can tokenize directly
+- [ ] Include tests for encode/decode round trips
+- [ ] Support dynamic vocabulary merges during training
+- [ ] Document tokenizer usage in `/tokenizer/README.md`
+
+### PHP API & Integration
+- [ ] Implement async HTTP server with Swoole/ReactPHP
+- [ ] Stream tokens back to clients during generation
+- [ ] Call the Rust core through FFI for zero-copy data flow
+- [ ] Add authentication and rate limiting middleware
+- [ ] Improve logging and structured error handling
+- [ ] Provide example client scripts (PHP and JavaScript)
+
+### Training Pipeline
+- [ ] Build a dataset loader for large text corpora
+- [ ] Implement shuffling and batching dataloader
+- [ ] Add mixed-precision and gradient accumulation support
+- [ ] Save training checkpoints under `weights/`
+- [ ] Provide evaluation metrics and scripts
+- [ ] Document full training workflow
+
+### RAG Integration
+- [ ] Connect retrieval system for context injection
+- [ ] Compose prompts with retrieved chunks prior to inference
+- [ ] Allow pluggable retrieval backends (e.g. Elasticsearch, SQLite FTS)
+- [ ] Cache retrieval results for repeated queries
+- [ ] Demonstrate RAG flow with example documents
+- [ ] Benchmark retrieval + generation latency
+
+### Testing and CI
+- [ ] Write unit tests for Rust modules
+- [ ] Write unit tests for PHP endpoints
+- [ ] Set up GitHub Actions for continuous integration
+- [ ] Add benchmarks for inference speed
+- [ ] Run Clippy and PHPStan as part of CI
+- [ ] Create integration tests across the Rust/PHP boundary
+
+### Documentation & Examples
+- [ ] Expand main README with command examples
+- [ ] Generate Rust docs via `cargo doc` and host them
+- [ ] Provide thorough code comments for each module
+- [ ] Write a tutorial walking through training and inference
+- [ ] Include architecture diagrams and flowcharts
+- [ ] Add example notebooks demonstrating usage
+
+### Deployment
+- [ ] Create a Dockerfile for the complete stack
+- [ ] Provide Kubernetes manifests and Helm chart
+- [ ] Document local deployment with Docker Compose
+- [ ] Automate releases with versioned Git tags
+- [ ] Supply example systemd service files for production
+
