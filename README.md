@@ -165,6 +165,8 @@ dRAGon/
 * Added a CLI to run inference directly on text input (`core/src/bin/infer_text.rs`).
 * Implemented a simple autoregressive text generation CLI (`core/src/bin/generate_text.rs`).
 * Added a cross-entropy loss module for evaluation (`core/src/loss.rs`).
+* Added a CLI to compute cross-entropy loss for a text prompt (`core/src/bin/eval_loss.rs`).
+* Added a CLI to compute perplexity for a text prompt (`core/src/bin/eval_perplexity.rs`).
 
 ## \ud83d\udcdd Development To-Do List
 
