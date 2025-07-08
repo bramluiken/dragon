@@ -7,10 +7,10 @@ pub struct Transformer {
 
 impl Transformer {
     /// Creates a new [`Transformer`] with `num_layers` blocks.
-    pub fn new(num_layers: usize, embed_dim: usize, hidden_dim: usize) -> Self {
+    pub fn new(num_layers: usize, embed_dim: usize, hidden_dim: usize, num_heads: usize) -> Self {
         let mut blocks = Vec::with_capacity(num_layers);
         for _ in 0..num_layers {
-            blocks.push(DecoderBlock::new(embed_dim, hidden_dim));
+            blocks.push(DecoderBlock::new(embed_dim, hidden_dim, num_heads));
         }
         Self { blocks }
     }
@@ -27,7 +27,7 @@ mod tests {
 
     #[test]
     fn transformer_forward_shape() {
-        let model = Transformer::new(3, 2, 2);
+        let model = Transformer::new(3, 2, 2, 1);
         let input = vec![vec![1.0f32, -1.0]];
         let output = model.forward(&input);
         assert_eq!(output.len(), input.len());

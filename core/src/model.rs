@@ -13,7 +13,7 @@ pub struct Model {
 
 impl Model {
     /// Creates a new [`Model`] with the specified dimensions.
-    pub fn new(vocab_size: usize, embed_dim: usize, hidden_dim: usize, num_layers: usize) -> Self {
+    pub fn new(vocab_size: usize, embed_dim: usize, hidden_dim: usize, num_layers: usize, num_heads: usize) -> Self {
         // embedding weights: vocab_size x embed_dim identity-like matrix
         let embed_weights = (0..vocab_size)
             .map(|i| {
@@ -33,7 +33,7 @@ impl Model {
         Self {
             embedding: Embedding::new(embed_weights),
             positional: RotaryEmbedding::new(embed_dim),
-            transformer: Transformer::new(num_layers, embed_dim, hidden_dim),
+            transformer: Transformer::new(num_layers, embed_dim, hidden_dim, num_heads),
             output_layer: Linear::new(output_weights, vec![0.0; vocab_size]),
         }
     }
@@ -75,7 +75,7 @@ mod tests {
 
     #[test]
     fn model_forward_shapes() {
-        let model = Model::new(2, 2, 2, 1);
+        let model = Model::new(2, 2, 2, 1, 1);
         let input = vec![0usize, 1];
         let output = model.forward(&input);
         assert_eq!(output.len(), input.len());
@@ -85,7 +85,7 @@ mod tests {
 
     #[test]
     fn model_generate_length() {
-        let model = Model::new(2, 2, 2, 1);
+        let model = Model::new(2, 2, 2, 1, 1);
         let input = vec![0usize];
         let generated = model.generate(&input, 3);
         assert_eq!(generated.len(), 4);
