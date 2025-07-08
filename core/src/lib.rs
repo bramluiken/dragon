@@ -8,6 +8,7 @@ pub mod rotary;
 pub mod model;
 pub mod tokenizer;
 pub mod loss;
+pub mod serialization;
 pub mod ffi;
 pub mod quant;
 
@@ -17,8 +18,8 @@ pub fn add(left: u64, right: u64) -> u64 {
 
 /// Simple linear layer using nested vectors for storage.
 pub struct Linear {
-    weight: Vec<Vec<f32>>, // shape: in_dim x out_dim
-    bias: Vec<f32>,        // shape: out_dim
+    pub weight: Vec<Vec<f32>>, // shape: in_dim x out_dim
+    pub bias: Vec<f32>,        // shape: out_dim
 }
 
 impl Linear {

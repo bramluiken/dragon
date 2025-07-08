@@ -1,4 +1,7 @@
 use crate::{embedding::Embedding, transformer::Transformer, Linear, rotary::RotaryEmbedding};
+use crate::serialization::{self, Tensor};
+use std::collections::BTreeMap;
+use serde_json::json;
 
 /// End-to-end decoder-only model tying together embedding, transformer and output layer.
 ///
@@ -67,6 +70,163 @@ impl Model {
         }
         tokens
     }
+
+    /// Saves the model weights to a `.safetensors` file.
+    pub fn save_safetensors(&self, path: &str) -> std::io::Result<()> {
+        let mut tensors: BTreeMap<String, Tensor> = BTreeMap::new();
+
+        let vocab_size = self.embedding.weights.len();
+        let embed_dim = self.embedding.weights[0].len();
+        tensors.insert(
+            "embedding.weight".into(),
+            Tensor {
+                shape: vec![vocab_size, embed_dim],
+                data: self
+                    .embedding
+                    .weights
+                    .iter()
+                    .flat_map(|v| v.clone())
+                    .collect(),
+            },
+        );
+
+        let out_in = self.output_layer.weight.len();
+        let out_out = self.output_layer.weight[0].len();
+        tensors.insert(
+            "output.weight".into(),
+            Tensor {
+                shape: vec![out_in, out_out],
+                data: self
+                    .output_layer
+                    .weight
+                    .iter()
+                    .flat_map(|v| v.clone())
+                    .collect(),
+            },
+        );
+        tensors.insert(
+            "output.bias".into(),
+            Tensor {
+                shape: vec![self.output_layer.bias.len()],
+                data: self.output_layer.bias.clone(),
+            },
+        );
+
+        for (i, block) in self.transformer.blocks.iter().enumerate() {
+            let prefix = format!("layers.{}", i);
+            tensors.insert(
+                format!("{}.ln1.gamma", prefix),
+                Tensor {
+                    shape: vec![block.ln1.gamma.len()],
+                    data: block.ln1.gamma.clone(),
+                },
+            );
+            tensors.insert(
+                format!("{}.ln1.beta", prefix),
+                Tensor {
+                    shape: vec![block.ln1.beta.len()],
+                    data: block.ln1.beta.clone(),
+                },
+            );
+            tensors.insert(
+                format!("{}.ln2.gamma", prefix),
+                Tensor {
+                    shape: vec![block.ln2.gamma.len()],
+                    data: block.ln2.gamma.clone(),
+                },
+            );
+            tensors.insert(
+                format!("{}.ln2.beta", prefix),
+                Tensor {
+                    shape: vec![block.ln2.beta.len()],
+                    data: block.ln2.beta.clone(),
+                },
+            );
+
+            add_linear(&mut tensors, &block.self_attn.w_q, &format!("{}.attn.w_q", prefix));
+            add_linear(&mut tensors, &block.self_attn.w_k, &format!("{}.attn.w_k", prefix));
+            add_linear(&mut tensors, &block.self_attn.w_v, &format!("{}.attn.w_v", prefix));
+            add_linear(&mut tensors, &block.self_attn.w_o, &format!("{}.attn.w_o", prefix));
+            add_linear(&mut tensors, &block.feedforward.w1, &format!("{}.ff.w1", prefix));
+            add_linear(&mut tensors, &block.feedforward.w2, &format!("{}.ff.w2", prefix));
+        }
+
+        let meta = json!({"num_layers": self.transformer.blocks.len()});
+        serialization::write_safetensors(&tensors, path, Some(meta))
+    }
+
+    /// Loads a model from a `.safetensors` file.
+    pub fn load_safetensors(path: &str) -> std::io::Result<Self> {
+        let (tensors, meta) = serialization::read_safetensors(path)?;
+        let num_layers = meta
+            .as_ref()
+            .and_then(|m| m.get("num_layers"))
+            .and_then(|v| v.as_u64())
+            .unwrap_or(1) as usize;
+
+        let embed = tensors.get("embedding.weight").unwrap();
+        let vocab_size = embed.shape[0];
+        let embed_dim = embed.shape[1];
+
+        let ff = tensors
+            .get("layers.0.ff.w1.weight")
+            .expect("missing feedforward weight");
+        let hidden_dim = ff.shape[1];
+
+        let mut model = Model::new(vocab_size, embed_dim, hidden_dim, num_layers);
+
+        model.embedding.weights = matrix(embed);
+        model.output_layer.weight = matrix(tensors.get("output.weight").unwrap());
+        model.output_layer.bias = tensors.get("output.bias").unwrap().data.clone();
+
+        for i in 0..num_layers {
+            let prefix = format!("layers.{}", i);
+            let block = &mut model.transformer.blocks[i];
+            block.ln1.gamma = tensors.get(&format!("{}.ln1.gamma", prefix)).unwrap().data.clone();
+            block.ln1.beta = tensors.get(&format!("{}.ln1.beta", prefix)).unwrap().data.clone();
+            block.ln2.gamma = tensors.get(&format!("{}.ln2.gamma", prefix)).unwrap().data.clone();
+            block.ln2.beta = tensors.get(&format!("{}.ln2.beta", prefix)).unwrap().data.clone();
+            load_linear(&mut block.self_attn.w_q, &tensors, &format!("{}.attn.w_q", prefix));
+            load_linear(&mut block.self_attn.w_k, &tensors, &format!("{}.attn.w_k", prefix));
+            load_linear(&mut block.self_attn.w_v, &tensors, &format!("{}.attn.w_v", prefix));
+            load_linear(&mut block.self_attn.w_o, &tensors, &format!("{}.attn.w_o", prefix));
+            load_linear(&mut block.feedforward.w1, &tensors, &format!("{}.ff.w1", prefix));
+            load_linear(&mut block.feedforward.w2, &tensors, &format!("{}.ff.w2", prefix));
+        }
+        Ok(model)
+    }
+}
+
+fn add_linear(tensors: &mut BTreeMap<String, Tensor>, linear: &Linear, name: &str) {
+    let in_dim = linear.weight.len();
+    let out_dim = linear.weight[0].len();
+    tensors.insert(
+        format!("{}.weight", name),
+        Tensor {
+            shape: vec![in_dim, out_dim],
+            data: linear.weight.iter().flat_map(|v| v.clone()).collect(),
+        },
+    );
+    tensors.insert(
+        format!("{}.bias", name),
+        Tensor {
+            shape: vec![linear.bias.len()],
+            data: linear.bias.clone(),
+        },
+    );
+}
+
+fn load_linear(linear: &mut Linear, tensors: &BTreeMap<String, Tensor>, name: &str) {
+    let w = tensors.get(&format!("{}.weight", name)).unwrap();
+    let b = tensors.get(&format!("{}.bias", name)).unwrap();
+    linear.weight = matrix(w);
+    linear.bias = b.data.clone();
+}
+
+fn matrix(t: &Tensor) -> Vec<Vec<f32>> {
+    let rows = t.shape[0];
+    let cols = t.shape[1];
+    t.data.chunks(cols).map(|c| c.to_vec()).collect()
 }
 
 #[cfg(test)]
