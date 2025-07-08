@@ -8,6 +8,7 @@ pub mod rotary;
 pub mod model;
 pub mod tokenizer;
 pub mod loss;
+pub mod blas;
 pub mod serialization;
 pub mod ffi;
 pub mod quant;
@@ -40,22 +41,30 @@ impl Linear {
 
     /// Applies the linear transformation to an input matrix.
     pub fn forward(&self, input: &[Vec<f32>]) -> Vec<Vec<f32>> {
-        input
-            .iter()
-            .map(|row| {
-                self.weight[0]
-                    .iter()
-                    .enumerate()
-                    .map(|(j, _)| {
-                        row.iter()
-                            .enumerate()
-                            .map(|(i, x)| x * self.weight[i][j])
-                            .sum::<f32>()
-                            + self.bias[j]
-                    })
-                    .collect::<Vec<f32>>()
-            })
-            .collect()
+        let m = input.len();
+        let k = input[0].len();
+        let n = self.weight[0].len();
+
+        let mut a = Vec::with_capacity(m * k);
+        for row in input {
+            a.extend_from_slice(row);
+        }
+
+        let mut b = Vec::with_capacity(k * n);
+        for row in &self.weight {
+            b.extend_from_slice(row);
+        }
+
+        let mut c = vec![0.0f32; m * n];
+        crate::blas::sgemm(m, n, k, &a, &b, &mut c);
+
+        let mut output = vec![vec![0.0f32; n]; m];
+        for i in 0..m {
+            for j in 0..n {
+                output[i][j] = c[i * n + j] + self.bias[j];
+            }
+        }
+        output
     }
 }
 

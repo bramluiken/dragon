@@ -67,7 +67,7 @@ A **minimal decoder-only LLM**:
 | ------------------------ | ----------------------------------------- |
 | Tensor Math              | `ndarray`, `tch-rs`, or `burn`            |
 | Tokenizer                | `tokenizers` (Hugging Face Rust bindings) |
-| Matrix Multiplication    | BLAS bindings (`ndarray-linalg`)          |
+| Matrix Multiplication    | BLAS via optional `cblas` FFI            |
 | Attention                | Custom implementation w/ SIMD             |
 | Training Loop (optional) | `burn` or raw autograd                    |
 | File I/O (weights)       | Flatbuffers/serde                         |
@@ -167,6 +167,7 @@ dRAGon/
 * Added a cross-entropy loss module for evaluation (`core/src/loss.rs`).
 * Added a CLI to compute cross-entropy loss for a text prompt (`core/src/bin/eval_loss.rs`).
 * Added a CLI to compute perplexity for a text prompt (`core/src/bin/eval_perplexity.rs`).
+* Added optional BLAS-backed matrix multiplication via FFI (`core/src/blas.rs`).
 * Added a simple training CLI demonstrating custom autograd (`core/src/bin/train.rs`).
 * Implemented simple int8 quantization utilities for lightweight inference (`core/src/quant.rs`).
 
@@ -174,7 +175,7 @@ dRAGon/
 
 ### Core (Rust)
 - [x] Replace naive attention with optimized multi-head attention
-- [ ] Integrate BLAS-backed matrix multiplication for speed
+- [x] Integrate BLAS-backed matrix multiplication for speed
 - [x] Expose FFI-friendly API for PHP integration
 - [ ] Support model serialization to `.safetensors`
 - [x] Add training loop using `burn` or custom autograd
