@@ -78,6 +78,11 @@ impl BpeTokenizer {
         }
     }
 
+    /// Returns the current vocabulary size.
+    pub fn vocab_size(&self) -> usize {
+        self.inv_vocab.len()
+    }
+
     /// Adds a new merge pair to the tokenizer and returns the id of the newly
     /// created token. If the merged token already exists, its id is returned
     /// and the merge order is updated accordingly.
@@ -96,6 +101,27 @@ impl BpeTokenizer {
             .entry((a.to_string(), b.to_string()))
             .or_insert(rank);
         id
+    }
+
+    /// Learns up to `num_merges` new merges from `text` based on token pair
+    /// frequencies. Merges are applied greedily one at a time.
+    pub fn learn_merges(&mut self, text: &str, num_merges: usize) {
+        for _ in 0..num_merges {
+            let mut counts: HashMap<(usize, usize), usize> = HashMap::new();
+            for word in text.split_whitespace() {
+                let tokens = self.encode(word);
+                for pair in tokens.windows(2) {
+                    *counts.entry((pair[0], pair[1])).or_insert(0) += 1;
+                }
+            }
+            let ((a, b), _) = match counts.into_iter().max_by_key(|p| p.1) {
+                Some(p) => p,
+                None => break,
+            };
+            let a_tok = self.inv_vocab[a].clone();
+            let b_tok = self.inv_vocab[b].clone();
+            self.add_merge(&a_tok, &b_tok);
+        }
     }
 
     fn encode_word(&self, word: &str) -> Vec<usize> {
@@ -257,6 +283,18 @@ mod tests {
         assert_eq!(id, 3);
         let encoded = tok.encode("ab");
         assert_eq!(encoded, vec![id]);
+        let decoded = tok.decode(&encoded);
+        assert_eq!(decoded, "ab");
+    }
+
+    #[test]
+    fn learn_merges_from_text() {
+        let vocab = vec!["<unk>".into(), "a".into(), "b".into()];
+        let mut tok = BpeTokenizer::new(vocab, Vec::new(), 0);
+        tok.learn_merges("ab ab", 1);
+        assert_eq!(tok.vocab_size(), 3 + 1);
+        let encoded = tok.encode("ab");
+        assert_eq!(encoded.len(), 1);
         let decoded = tok.decode(&encoded);
         assert_eq!(decoded, "ab");
     }

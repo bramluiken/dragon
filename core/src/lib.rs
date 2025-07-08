@@ -68,6 +68,15 @@ impl Linear {
         }
         output
     }
+
+    /// Adds a new output dimension initialized to zero and returns its index.
+    pub fn add_output(&mut self) -> usize {
+        for row in &mut self.weight {
+            row.push(0.0);
+        }
+        self.bias.push(0.0);
+        self.bias.len() - 1
+    }
 }
 
 #[cfg(test)]

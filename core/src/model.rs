@@ -71,6 +71,18 @@ impl Model {
         tokens
     }
 
+    /// Appends a new token to the embedding and output layers and returns its id.
+    pub fn add_token(&mut self) -> usize {
+        let id = self.embedding.add_token();
+        self.output_layer.add_output();
+        id
+    }
+
+    /// Current size of the model's vocabulary.
+    pub fn vocab_size(&self) -> usize {
+        self.embedding.weights.len()
+    }
+
     /// Saves the model weights to a `.safetensors` file.
     pub fn save_safetensors(&self, path: &str) -> std::io::Result<()> {
         let mut tensors: BTreeMap<String, Tensor> = BTreeMap::new();

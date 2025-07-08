@@ -18,6 +18,13 @@ impl Embedding {
             .map(|&idx| self.weights[idx].clone())
             .collect()
     }
+
+    /// Appends a new zero-initialized token embedding and returns its id.
+    pub fn add_token(&mut self) -> usize {
+        let dim = self.weights[0].len();
+        self.weights.push(vec![0.0; dim]);
+        self.weights.len() - 1
+    }
 }
 
 #[cfg(test)]
