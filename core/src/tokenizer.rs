@@ -37,6 +37,26 @@ impl BpeTokenizer {
         }
     }
 
+    /// Adds a new merge pair to the tokenizer and returns the id of the newly
+    /// created token. If the merged token already exists, its id is returned
+    /// and the merge order is updated accordingly.
+    pub fn add_merge(&mut self, a: &str, b: &str) -> usize {
+        let merged = format!("{}{}", a, b);
+        let id = if let Some(&existing) = self.vocab.get(&merged) {
+            existing
+        } else {
+            let new_id = self.inv_vocab.len();
+            self.vocab.insert(merged.clone(), new_id);
+            self.inv_vocab.push(merged.clone());
+            new_id
+        };
+        let rank = self.merges.len();
+        self.merges
+            .entry((a.to_string(), b.to_string()))
+            .or_insert(rank);
+        id
+    }
+
     fn encode_word(&self, word: &str) -> Vec<usize> {
         let mut pieces: Vec<String> = word.chars().map(|c| c.to_string()).collect();
         if pieces.is_empty() {
@@ -175,5 +195,17 @@ mod tests {
         assert!(ids.is_empty());
         let decoded = tok.decode(&ids);
         assert_eq!(decoded, "");
+    }
+
+    #[test]
+    fn dynamic_merge() {
+        let vocab = vec!["<unk>".into(), "a".into(), "b".into()];
+        let mut tok = BpeTokenizer::new(vocab, Vec::new(), 0);
+        let id = tok.add_merge("a", "b");
+        assert_eq!(id, 3);
+        let encoded = tok.encode("ab");
+        assert_eq!(encoded, vec![id]);
+        let decoded = tok.decode(&encoded);
+        assert_eq!(decoded, "ab");
     }
 }
