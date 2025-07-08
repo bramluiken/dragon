@@ -85,6 +85,39 @@ pub extern "C" fn dragon_model_load(path: *const c_char) -> *mut ModelHandle {
         Err(_) => std::ptr::null_mut(),
     }
 }
+<<<<<< codex/call-rust-core-using-ffi
+#[no_mangle]
+pub extern "C" fn dragon_model_generate_inplace(
+    handle: *mut ModelHandle,
+    tokens_ptr: *mut c_ulong,
+    len: c_ulong,
+    steps: c_ulong,
+) -> c_ulong {
+    assert!(!handle.is_null());
+    if tokens_ptr.is_null() {
+        return 0;
+    }
+    let model = unsafe { &(*handle).model };
+    let total = (len + steps) as usize;
+    let buf = unsafe { std::slice::from_raw_parts_mut(tokens_ptr as *mut usize, total) };
+    let mut current = len as usize;
+    for _ in 0..steps {
+        let logits = model.forward(&buf[..current]);
+        if let Some(last) = logits.last() {
+            let next = last
+                .iter()
+                .enumerate()
+                .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+                .map(|(i, _)| i)
+                .unwrap_or(0);
+            buf[current] = next;
+            current += 1;
+        }
+    }
+    current as c_ulong
+}
+
+=======
 
 /// Opaque handle wrapping a `BpeTokenizer` for FFI usage.
 #[repr(C)]
@@ -168,3 +201,4 @@ pub extern "C" fn dragon_tokenizer_encode(
     }
     count as c_ulong
 }
+>>>>>> main

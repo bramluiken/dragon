@@ -194,7 +194,7 @@ dRAGon/
 ### PHP API & Integration
 - [x] Implement async HTTP server with Swoole/ReactPHP
 - [x] Stream tokens back to clients during generation
-- [ ] Call the Rust core through FFI for zero-copy data flow
+- [x] Call the Rust core through FFI for zero-copy data flow
 - [ ] Add authentication and rate limiting middleware
 - [ ] Improve logging and structured error handling
 - [x] Provide example client scripts (PHP and JavaScript)
