@@ -161,7 +161,7 @@ dRAGon/
   integrated it into the `Model`.
 * Introduced a basic command-line inference tool (`core/src/bin/infer.rs`) demonstrating model usage.
 * Added a simple PHP endpoint invoking the Rust inference binary (`php/api/index.php`).
-* Implemented a naive whitespace tokenizer module (`core/src/tokenizer.rs`).
+* Implemented a minimal byte pair encoding tokenizer (`core/src/tokenizer.rs`).
 * Added a CLI to run inference directly on text input (`core/src/bin/infer_text.rs`).
 * Implemented a simple autoregressive text generation CLI (`core/src/bin/generate_text.rs`).
 * Added a cross-entropy loss module for evaluation (`core/src/loss.rs`).
@@ -183,7 +183,7 @@ dRAGon/
 - [x] Implement optional quantization for lightweight inference
 
 ### Tokenizer
-- [ ] Switch from whitespace tokenizer to SentencePiece/BPE
+- [x] Switch from whitespace tokenizer to SentencePiece/BPE
 - [ ] Provide scripts to train and update vocabularies
 - [ ] Add FFI bindings so PHP can tokenize directly
 - [ ] Include tests for encode/decode round trips
