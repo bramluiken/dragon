@@ -177,7 +177,7 @@ dRAGon/
 - [x] Replace naive attention with optimized multi-head attention
 - [x] Integrate BLAS-backed matrix multiplication for speed
 - [x] Expose FFI-friendly API for PHP integration
-- [ ] Support model serialization to `.safetensors`
+- [x] Support model serialization to `.safetensors`
 - [x] Add training loop using `burn` or custom autograd
 - [x] Implement optional quantization for lightweight inference
 

@@ -251,4 +251,15 @@ mod tests {
         assert_eq!(generated.len(), 4);
         assert!(generated.iter().all(|&t| t < 2));
     }
+
+    #[test]
+    fn model_save_load_roundtrip() {
+        let model = Model::new(2, 2, 2, 1, 1);
+        let path = "test_model.safetensors";
+        model.save_safetensors(path).unwrap();
+        let loaded = Model::load_safetensors(path).unwrap();
+        std::fs::remove_file(path).unwrap();
+        assert_eq!(model.embedding.weights, loaded.embedding.weights);
+        assert_eq!(model.output_layer.bias, loaded.output_layer.bias);
+    }
 }
