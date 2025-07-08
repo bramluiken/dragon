@@ -174,7 +174,7 @@ dRAGon/
 ### Core (Rust)
 - [ ] Replace naive attention with optimized multi-head attention
 - [ ] Integrate BLAS-backed matrix multiplication for speed
-- [ ] Expose FFI-friendly API for PHP integration
+- [x] Expose FFI-friendly API for PHP integration
 - [ ] Support model serialization to `.safetensors`
 - [x] Implement optional quantization for lightweight inference
 - [ ] Add training loop using `burn` or custom autograd
