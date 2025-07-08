@@ -173,7 +173,8 @@ impl Model {
             .expect("missing feedforward weight");
         let hidden_dim = ff.shape[1];
 
-        let mut model = Model::new(vocab_size, embed_dim, hidden_dim, num_layers);
+        let num_heads = 1;
+        let mut model = Model::new(vocab_size, embed_dim, hidden_dim, num_layers, num_heads);
 
         model.embedding.weights = matrix(embed);
         model.output_layer.weight = matrix(tensors.get("output.weight").unwrap());

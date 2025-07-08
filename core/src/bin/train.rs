@@ -43,8 +43,9 @@ fn main() {
     let embed_dim = 4;
     let hidden_dim = 4;
     let num_layers = 1;
+    let num_heads = 1;
 
-    let mut model = Model::new(vocab_size, embed_dim, hidden_dim, num_layers);
+    let mut model = Model::new(vocab_size, embed_dim, hidden_dim, num_layers, num_heads);
     let lr = 0.1f32;
 
     for epoch in 0..epochs {
