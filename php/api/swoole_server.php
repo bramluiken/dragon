@@ -20,7 +20,19 @@ $server->on('start', function (Server $server) use ($host, $port) {
 });
 
 $server->on('request', function (Request $request, Response $response) {
-<<<<<< codex/improve-logging-and-error-handling
+    $response->header('Content-Type', 'application/json');
+
+    if (!check_auth_header($request->header['authorization'] ?? '')) {
+        respond_error($response, 'Unauthorized', 401);
+        return;
+    }
+
+    $ip = $request->server['remote_addr'] ?? 'unknown';
+    if (!update_rate_limit($ip)) {
+        respond_error($response, 'Rate limit exceeded', 429);
+        return;
+    }
+
     try {
         if ($request->server['request_method'] !== 'POST') {
             respond_error($response, 'POST only', 405);
@@ -52,34 +64,6 @@ $server->on('request', function (Request $request, Response $response) {
         respond_json($response, ['raw' => $output]);
     } catch (Throwable $e) {
         respond_error($response, 'Unhandled error: ' . $e->getMessage(), 500);
-=======
-    $response->header('Content-Type', 'application/json');
-
-    if (!check_auth_header($request->header['authorization'] ?? '')) {
-        $response->status(401);
-        $response->end(json_encode(['error' => 'Unauthorized']));
-        return;
-    }
-
-    $ip = $request->server['remote_addr'] ?? 'unknown';
-    if (!update_rate_limit($ip)) {
-        $response->status(429);
-        $response->end(json_encode(['error' => 'Rate limit exceeded']));
-        return;
-    }
-
-    if ($request->server['request_method'] !== 'POST') {
-        $response->status(405);
-        $response->end(json_encode(['error' => 'POST only']));
-        return;
-    }
-
-    $data = json_decode($request->rawContent(), true);
-    if (!is_array($data) || !isset($data['tokens']) || !is_array($data['tokens'])) {
-        $response->status(400);
-        $response->end(json_encode(['error' => 'Expected JSON with "tokens" array']));
-        return;
->>>>>> main
     }
 });
 
