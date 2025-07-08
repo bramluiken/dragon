@@ -192,7 +192,7 @@ dRAGon/
 - [ ] Call the Rust core through FFI for zero-copy data flow
 - [ ] Add authentication and rate limiting middleware
 - [ ] Improve logging and structured error handling
-- [ ] Provide example client scripts (PHP and JavaScript)
+- [x] Provide example client scripts (PHP and JavaScript)
 
 ### Training Pipeline
 - [ ] Build a dataset loader for large text corpora
