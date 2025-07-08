@@ -16,3 +16,13 @@ cargo run --bin train_vocab <input.txt> <output_vocab.txt> [limit]
 
 `limit` is optional and specifies the maximum number of tokens to keep, sorted by frequency. The resulting vocabulary file contains one token per line and can be used with the CLI tools in `core/src/bin`.
 
+## Updating a vocabulary
+
+If you already have a vocabulary and want to add tokens from additional text, use the `update_vocab` helper:
+
+```bash
+cargo run --bin update_vocab <old_vocab.txt> <new_text.txt> <output_vocab.txt> [limit]
+```
+
+New tokens are appended to the existing list sorted by frequency. When `limit` is supplied, the final vocabulary will be truncated to at most that many entries.
+

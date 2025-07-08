@@ -12,7 +12,7 @@ $header = "
     typedef struct ModelHandle ModelHandle;
     ModelHandle* dragon_model_create(ulong vocab, ulong embed, ulong hidden, ulong layers);
     void dragon_model_free(ModelHandle* handle);
-    ulong dragon_model_generate(ModelHandle* handle, const ulong* tokens, ulong len, ulong steps, ulong* out);
+    ulong dragon_model_generate_inplace(ModelHandle* handle, ulong* tokens, ulong len, ulong steps);
 ";
 
 $lib = FFI::cdef($header, realpath(__DIR__ . '/../../core/target/debug/libdragon_core.so'));
@@ -26,18 +26,17 @@ if (empty($tokens)) {
 
 $handle = $lib->dragon_model_create(VOCAB_SIZE, EMBED_DIM, HIDDEN_DIM, NUM_LAYERS);
 
-$in = FFI::new("ulong[".count($tokens)."]", false);
-foreach ($tokens as $i => $t) {
-    $in[$i] = $t;
-}
 
 $steps = 2;
-$out = FFI::new("ulong[".(count($tokens)+$steps)."]", false);
-$len = $lib->dragon_model_generate($handle, $in, count($tokens), $steps, $out);
+$buf = FFI::new("ulong[".(count($tokens)+$steps)."]", false);
+foreach ($tokens as $i => $t) {
+    $buf[$i] = $t;
+}
+$len = $lib->dragon_model_generate_inplace($handle, $buf, count($tokens), $steps);
 
 $result = [];
 for ($i = 0; $i < $len; $i++) {
-    $result[] = $out[$i];
+    $result[] = $buf[$i];
 }
 
 echo json_encode($result) . PHP_EOL;
