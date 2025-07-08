@@ -18,5 +18,5 @@ cargo run --bin generate_text -- data/tokenizer/vocab.txt "hello" 3
 To train the output layer with a short text snippet you can use `train`:
 
 ```bash
-cargo run --bin train -- data/tokenizer/vocab.txt "hello world hello" 10
+cargo run --bin train -- data/tokenizer/vocab.txt data/tokenizer/merges.txt "hello world hello" 10 4 --fp16
 ```
