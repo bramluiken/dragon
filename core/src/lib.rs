@@ -13,6 +13,7 @@ pub mod serialization;
 pub mod ffi;
 pub mod quant;
 pub mod hyperparams;
+pub mod dataset;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
