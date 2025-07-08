@@ -45,6 +45,28 @@ impl Model {
         let transformed = self.transformer.forward(&positioned);
         self.output_layer.forward(&transformed)
     }
+
+    /// Autoregressively generates additional tokens using greedy decoding.
+    ///
+    /// `steps` specifies how many new tokens to generate beyond the provided
+    /// `input`. The returned vector contains the original input followed by the
+    /// generated tokens.
+    pub fn generate(&self, input: &[usize], steps: usize) -> Vec<usize> {
+        let mut tokens = input.to_vec();
+        for _ in 0..steps {
+            let logits = self.forward(&tokens);
+            if let Some(last) = logits.last() {
+                let next = last
+                    .iter()
+                    .enumerate()
+                    .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+                    .map(|(i, _)| i)
+                    .unwrap_or(0);
+                tokens.push(next);
+            }
+        }
+        tokens
+    }
 }
 
 #[cfg(test)]
@@ -59,5 +81,14 @@ mod tests {
         assert_eq!(output.len(), input.len());
         assert_eq!(output[0].len(), 2);
         assert_eq!(output[1].len(), 2);
+    }
+
+    #[test]
+    fn model_generate_length() {
+        let model = Model::new(2, 2, 2, 1);
+        let input = vec![0usize];
+        let generated = model.generate(&input, 3);
+        assert_eq!(generated.len(), 4);
+        assert!(generated.iter().all(|&t| t < 2));
     }
 }
