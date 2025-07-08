@@ -8,6 +8,8 @@ pub mod rotary;
 pub mod model;
 pub mod tokenizer;
 pub mod loss;
+pub mod ffi;
+pub mod quant;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
