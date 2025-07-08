@@ -15,6 +15,16 @@ Simple HTTP endpoint that invokes the Rust inference binary.
    ```
    The response contains the raw output from the inference binary.
 
+### Authentication
+
+Requests must include an `Authorization: Bearer <token>` header. Set the
+expected token via the `DRAGON_API_KEY` environment variable (default `secret`).
+
+### Rate limiting
+
+Each client IP is limited to 60 requests per minute. Exceeding the limit returns
+HTTP `429`.
+
 ## Async server (Swoole)
 
 If the [Swoole](https://www.swoole.co.uk/) extension is installed you can run
