@@ -14,6 +14,6 @@ php examples/client.php 0 1 2
 # Using Node.js
 node examples/client.js 0 1 2
 
-# Using PHP FFI bindings
+# Using PHP FFI bindings (zero-copy)
 php examples/ffi_client.php 0 1 2
 ```
