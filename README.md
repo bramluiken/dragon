@@ -201,7 +201,7 @@ dRAGon/
 
 ### Training Pipeline
 - [x] Build a dataset loader for large text corpora
-- [ ] Implement shuffling and batching dataloader
+- [x] Implement shuffling and batching dataloader
 - [ ] Add mixed-precision and gradient accumulation support
 - [ ] Save training checkpoints under `data/weights/`
 - [ ] Provide evaluation metrics and scripts
