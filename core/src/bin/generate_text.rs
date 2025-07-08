@@ -37,8 +37,9 @@ fn main() {
     let embed_dim = 4;
     let hidden_dim = 4;
     let num_layers = 1;
+    let num_heads = 1;
 
-    let model = Model::new(vocab_size, embed_dim, hidden_dim, num_layers);
+    let model = Model::new(vocab_size, embed_dim, hidden_dim, num_layers, num_heads);
     tokens = model.generate(&tokens, steps);
 
     let out_text = tokenizer.decode(&tokens);

@@ -149,7 +149,7 @@ dRAGon/
 
 ### Development Progress
 
-* Implemented a naive self-attention layer in Rust (`core/src/attention.rs`) as the first step toward the full decoder.
+* Implemented an optimized multi-head self-attention layer in Rust (`core/src/attention.rs`).
 * Added a simple two-layer feedforward network (`core/src/feedforward.rs`).
 * Created a minimal decoder block chaining attention and feedforward (`core/src/decoder.rs`).
 * Introduced a simple multi-layer `Transformer` composed of decoder blocks (`core/src/transformer.rs`).
@@ -173,7 +173,7 @@ dRAGon/
 ## \ud83d\udcdd Development To-Do List
 
 ### Core (Rust)
-- [ ] Replace naive attention with optimized multi-head attention
+- [x] Replace naive attention with optimized multi-head attention
 - [ ] Integrate BLAS-backed matrix multiplication for speed
 - [x] Expose FFI-friendly API for PHP integration
 - [ ] Support model serialization to `.safetensors`
