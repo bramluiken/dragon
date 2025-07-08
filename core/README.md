@@ -8,3 +8,9 @@ of token ids:
 ```bash
 cargo run --bin infer -- 0 1 2
 ```
+
+For text-based generation you can use the `generate_text` binary:
+
+```bash
+cargo run --bin generate_text -- tokenizer/vocab.txt "hello" 3
+```
