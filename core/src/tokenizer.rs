@@ -1,5 +1,46 @@
 use std::collections::HashMap;
 
+/// Tokenizer that simply splits text on ASCII whitespace.
+///
+/// Each whitespace separated token is looked up in the provided vocabulary.
+/// Unknown tokens are mapped to `unk_id`.
+pub struct WhitespaceTokenizer {
+    vocab: HashMap<String, usize>,
+    inv_vocab: Vec<String>,
+    unk_id: usize,
+}
+
+impl WhitespaceTokenizer {
+    /// Creates a new [`WhitespaceTokenizer`].
+    pub fn new(vocab: Vec<String>, unk_id: usize) -> Self {
+        let mut map = HashMap::new();
+        for (i, tok) in vocab.iter().enumerate() {
+            map.insert(tok.clone(), i);
+        }
+        Self {
+            vocab: map,
+            inv_vocab: vocab,
+            unk_id,
+        }
+    }
+
+    /// Encodes `text` by splitting on whitespace and converting each token to an id.
+    pub fn encode(&self, text: &str) -> Vec<usize> {
+        text.split_whitespace()
+            .map(|t| self.vocab.get(t).cloned().unwrap_or(self.unk_id))
+            .collect()
+    }
+
+    /// Decodes a sequence of ids back into a whitespace separated string.
+    pub fn decode(&self, tokens: &[usize]) -> String {
+        tokens
+            .iter()
+            .map(|&id| self.inv_vocab.get(id).cloned().unwrap_or_default())
+            .collect::<Vec<String>>()
+            .join(" ")
+    }
+}
+
 /// Simple byte pair encoding (BPE) tokenizer.
 ///
 /// The tokenizer loads a vocabulary and merge operations and applies
@@ -35,6 +76,26 @@ impl BpeTokenizer {
             merges: merge_map,
             unk_id,
         }
+    }
+
+    /// Adds a new merge pair to the tokenizer and returns the id of the newly
+    /// created token. If the merged token already exists, its id is returned
+    /// and the merge order is updated accordingly.
+    pub fn add_merge(&mut self, a: &str, b: &str) -> usize {
+        let merged = format!("{}{}", a, b);
+        let id = if let Some(&existing) = self.vocab.get(&merged) {
+            existing
+        } else {
+            let new_id = self.inv_vocab.len();
+            self.vocab.insert(merged.clone(), new_id);
+            self.inv_vocab.push(merged.clone());
+            new_id
+        };
+        let rank = self.merges.len();
+        self.merges
+            .entry((a.to_string(), b.to_string()))
+            .or_insert(rank);
+        id
     }
 
     fn encode_word(&self, word: &str) -> Vec<usize> {
@@ -93,6 +154,17 @@ impl BpeTokenizer {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn whitespace_roundtrip() {
+        let vocab = vec!["<unk>".into(), "hello".into(), "world".into()];
+        let tok = WhitespaceTokenizer::new(vocab.clone(), 0);
+        let text = "hello world";
+        let ids = tok.encode(text);
+        assert_eq!(ids, vec![1, 2]);
+        let decoded = tok.decode(&ids);
+        assert_eq!(decoded, text);
+    }
 
     #[test]
     fn encode_decode_roundtrip() {
@@ -175,5 +247,17 @@ mod tests {
         assert!(ids.is_empty());
         let decoded = tok.decode(&ids);
         assert_eq!(decoded, "");
+    }
+
+    #[test]
+    fn dynamic_merge() {
+        let vocab = vec!["<unk>".into(), "a".into(), "b".into()];
+        let mut tok = BpeTokenizer::new(vocab, Vec::new(), 0);
+        let id = tok.add_merge("a", "b");
+        assert_eq!(id, 3);
+        let encoded = tok.encode("ab");
+        assert_eq!(encoded, vec![id]);
+        let decoded = tok.decode(&encoded);
+        assert_eq!(decoded, "ab");
     }
 }

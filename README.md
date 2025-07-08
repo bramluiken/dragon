@@ -187,7 +187,7 @@ dRAGon/
 - [x] Switch from whitespace tokenizer to SentencePiece/BPE
 - [x] Provide scripts to train and update vocabularies
 - [x] Add FFI bindings so PHP can tokenize directly
-- [ ] Include tests for encode/decode round trips
+- [x] Include tests for encode/decode round trips
 - [ ] Support dynamic vocabulary merges during training
 - [ ] Document tokenizer usage in `/data/tokenizer/README.md`
 
@@ -201,7 +201,7 @@ dRAGon/
 
 ### Training Pipeline
 - [x] Build a dataset loader for large text corpora
-- [ ] Implement shuffling and batching dataloader
+- [x] Implement shuffling and batching dataloader
 - [x] Add mixed-precision and gradient accumulation support
 - [ ] Save training checkpoints under `data/weights/`
 - [ ] Provide evaluation metrics and scripts
