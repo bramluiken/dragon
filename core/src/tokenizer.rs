@@ -1,5 +1,46 @@
 use std::collections::HashMap;
 
+/// Tokenizer that simply splits text on ASCII whitespace.
+///
+/// Each whitespace separated token is looked up in the provided vocabulary.
+/// Unknown tokens are mapped to `unk_id`.
+pub struct WhitespaceTokenizer {
+    vocab: HashMap<String, usize>,
+    inv_vocab: Vec<String>,
+    unk_id: usize,
+}
+
+impl WhitespaceTokenizer {
+    /// Creates a new [`WhitespaceTokenizer`].
+    pub fn new(vocab: Vec<String>, unk_id: usize) -> Self {
+        let mut map = HashMap::new();
+        for (i, tok) in vocab.iter().enumerate() {
+            map.insert(tok.clone(), i);
+        }
+        Self {
+            vocab: map,
+            inv_vocab: vocab,
+            unk_id,
+        }
+    }
+
+    /// Encodes `text` by splitting on whitespace and converting each token to an id.
+    pub fn encode(&self, text: &str) -> Vec<usize> {
+        text.split_whitespace()
+            .map(|t| self.vocab.get(t).cloned().unwrap_or(self.unk_id))
+            .collect()
+    }
+
+    /// Decodes a sequence of ids back into a whitespace separated string.
+    pub fn decode(&self, tokens: &[usize]) -> String {
+        tokens
+            .iter()
+            .map(|&id| self.inv_vocab.get(id).cloned().unwrap_or_default())
+            .collect::<Vec<String>>()
+            .join(" ")
+    }
+}
+
 /// Simple byte pair encoding (BPE) tokenizer.
 ///
 /// The tokenizer loads a vocabulary and merge operations and applies
@@ -93,6 +134,17 @@ impl BpeTokenizer {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn whitespace_roundtrip() {
+        let vocab = vec!["<unk>".into(), "hello".into(), "world".into()];
+        let tok = WhitespaceTokenizer::new(vocab.clone(), 0);
+        let text = "hello world";
+        let ids = tok.encode(text);
+        assert_eq!(ids, vec![1, 2]);
+        let decoded = tok.decode(&ids);
+        assert_eq!(decoded, text);
+    }
 
     #[test]
     fn encode_decode_roundtrip() {

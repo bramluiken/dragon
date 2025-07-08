@@ -1,5 +1,7 @@
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
+use rand::seq::SliceRandom;
+use rand::thread_rng;
 
 use crate::tokenizer::WhitespaceTokenizer;
 
@@ -45,6 +47,47 @@ impl TextDataset {
     }
 }
 
+/// In-memory dataloader that yields shuffled batches of samples.
+pub struct DataLoader {
+    samples: Vec<(Vec<usize>, Vec<usize>)>,
+    batch_size: usize,
+    index: usize,
+}
+
+impl DataLoader {
+    /// Load all samples from `dataset` into memory and optionally shuffle them.
+    pub fn new(mut dataset: TextDataset, batch_size: usize, shuffle: bool) -> io::Result<Self> {
+        let mut samples = Vec::new();
+        while let Some(sample) = dataset.next_sample()? {
+            samples.push(sample);
+        }
+        if shuffle {
+            samples.shuffle(&mut thread_rng());
+        }
+        Ok(Self { samples, batch_size, index: 0 })
+    }
+
+    /// Returns the next batch as `(inputs, targets)` or `None` at end of epoch.
+    pub fn next_batch(&mut self) -> Option<(Vec<Vec<usize>>, Vec<Vec<usize>>)> {
+        if self.index >= self.samples.len() {
+            return None;
+        }
+        let end = (self.index + self.batch_size).min(self.samples.len());
+        let batch = &self.samples[self.index..end];
+        let (inputs, targets): (Vec<_>, Vec<_>) = batch.iter().cloned().unzip();
+        self.index = end;
+        Some((inputs, targets))
+    }
+
+    /// Resets the dataloader to the beginning and optionally reshuffles.
+    pub fn reset(&mut self, shuffle: bool) {
+        self.index = 0;
+        if shuffle {
+            self.samples.shuffle(&mut thread_rng());
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -71,6 +114,24 @@ mod tests {
         assert_eq!(s2.1, vec![3]);
 
         assert!(ds.next_sample().unwrap().is_none());
+        let _ = std::fs::remove_file(&path);
+    }
+
+    #[test]
+    fn dataloader_batches() {
+        let path = std::env::temp_dir().join("dataset_loader_test.txt");
+        {
+            let mut f = File::create(&path).unwrap();
+            writeln!(f, "a b c d").unwrap();
+            writeln!(f, "e f g h").unwrap();
+        }
+        let vocab = vec!["a".into(), "b".into(), "c".into(), "d".into(), "e".into(), "f".into(), "g".into(), "h".into()];
+        let tok = WhitespaceTokenizer::new(vocab, 0);
+        let ds = TextDataset::open(&path, tok).unwrap();
+        let mut dl = DataLoader::new(ds, 2, true).unwrap();
+        let batch = dl.next_batch().unwrap();
+        assert_eq!(batch.0.len(), 2);
+        assert!(dl.next_batch().is_none());
         let _ = std::fs::remove_file(&path);
     }
 }
