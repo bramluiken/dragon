@@ -185,15 +185,15 @@ dRAGon/
 
 ### Tokenizer
 - [x] Switch from whitespace tokenizer to SentencePiece/BPE
-- [ ] Provide scripts to train and update vocabularies
-- [ ] Add FFI bindings so PHP can tokenize directly
+- [x] Provide scripts to train and update vocabularies
+- [x] Add FFI bindings so PHP can tokenize directly
 - [ ] Include tests for encode/decode round trips
 - [ ] Support dynamic vocabulary merges during training
 - [ ] Document tokenizer usage in `/data/tokenizer/README.md`
 
 ### PHP API & Integration
 - [x] Implement async HTTP server with Swoole/ReactPHP
-- [ ] Stream tokens back to clients during generation
+- [x] Stream tokens back to clients during generation
 - [x] Call the Rust core through FFI for zero-copy data flow
 - [ ] Add authentication and rate limiting middleware
 - [ ] Improve logging and structured error handling
