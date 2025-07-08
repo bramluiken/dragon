@@ -190,7 +190,7 @@ dRAGon/
 - [ ] Document tokenizer usage in `/tokenizer/README.md`
 
 ### PHP API & Integration
-- [ ] Implement async HTTP server with Swoole/ReactPHP
+- [x] Implement async HTTP server with Swoole/ReactPHP
 - [ ] Stream tokens back to clients during generation
 - [ ] Call the Rust core through FFI for zero-copy data flow
 - [ ] Add authentication and rate limiting middleware
