@@ -14,3 +14,9 @@ For text-based generation you can use the `generate_text` binary:
 ```bash
 cargo run --bin generate_text -- tokenizer/vocab.txt "hello" 3
 ```
+
+To train the output layer with a short text snippet you can use `train`:
+
+```bash
+cargo run --bin train -- tokenizer/vocab.txt "hello world hello" 10
+```
