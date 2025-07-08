@@ -12,6 +12,7 @@ pub mod blas;
 pub mod serialization;
 pub mod ffi;
 pub mod quant;
+pub mod hyperparams;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
