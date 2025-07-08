@@ -167,6 +167,7 @@ dRAGon/
 * Added a cross-entropy loss module for evaluation (`core/src/loss.rs`).
 * Added a CLI to compute cross-entropy loss for a text prompt (`core/src/bin/eval_loss.rs`).
 * Added a CLI to compute perplexity for a text prompt (`core/src/bin/eval_perplexity.rs`).
+* Added a simple training CLI demonstrating custom autograd (`core/src/bin/train.rs`).
 * Implemented simple int8 quantization utilities for lightweight inference (`core/src/quant.rs`).
 
 ## \ud83d\udcdd Development To-Do List
@@ -176,8 +177,8 @@ dRAGon/
 - [ ] Integrate BLAS-backed matrix multiplication for speed
 - [x] Expose FFI-friendly API for PHP integration
 - [ ] Support model serialization to `.safetensors`
+- [x] Add training loop using `burn` or custom autograd
 - [x] Implement optional quantization for lightweight inference
-- [ ] Add training loop using `burn` or custom autograd
 
 ### Tokenizer
 - [ ] Switch from whitespace tokenizer to SentencePiece/BPE

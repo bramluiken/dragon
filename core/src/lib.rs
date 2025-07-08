@@ -27,6 +27,16 @@ impl Linear {
         Self { weight, bias }
     }
 
+    /// Mutable reference to the weight matrix.
+    pub fn weight_mut(&mut self) -> &mut [Vec<f32>] {
+        &mut self.weight
+    }
+
+    /// Mutable reference to the bias vector.
+    pub fn bias_mut(&mut self) -> &mut [f32] {
+        &mut self.bias
+    }
+
     /// Applies the linear transformation to an input matrix.
     pub fn forward(&self, input: &[Vec<f32>]) -> Vec<Vec<f32>> {
         input
