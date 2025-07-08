@@ -2,7 +2,9 @@
 
 This directory stores tokenizer logic and related assets.
 
-A minimal whitespace tokenizer is implemented in `core/src/tokenizer.rs` for early experimentation. It maps space-separated words to integer ids using a provided vocabulary.
+The project now includes a simple byte pair encoding (BPE) tokenizer implemented in `core/src/tokenizer.rs`. It loads a vocabulary and merge rules from the files in this directory.
+
+Example files `vocab.txt` and `merges.txt` demonstrate the expected format. Each merge line lists two space-separated tokens.
 
 ## Training a vocabulary
 
