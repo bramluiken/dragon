@@ -9,6 +9,9 @@ pub mod model;
 pub mod tokenizer;
 pub mod loss;
 pub mod blas;
+pub mod serialization;
+pub mod ffi;
+pub mod quant;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
@@ -16,14 +19,24 @@ pub fn add(left: u64, right: u64) -> u64 {
 
 /// Simple linear layer using nested vectors for storage.
 pub struct Linear {
-    weight: Vec<Vec<f32>>, // shape: in_dim x out_dim
-    bias: Vec<f32>,        // shape: out_dim
+    pub weight: Vec<Vec<f32>>, // shape: in_dim x out_dim
+    pub bias: Vec<f32>,        // shape: out_dim
 }
 
 impl Linear {
     /// Creates a new [`Linear`] layer.
     pub fn new(weight: Vec<Vec<f32>>, bias: Vec<f32>) -> Self {
         Self { weight, bias }
+    }
+
+    /// Mutable reference to the weight matrix.
+    pub fn weight_mut(&mut self) -> &mut [Vec<f32>] {
+        &mut self.weight
+    }
+
+    /// Mutable reference to the bias vector.
+    pub fn bias_mut(&mut self) -> &mut [f32] {
+        &mut self.bias
     }
 
     /// Applies the linear transformation to an input matrix.

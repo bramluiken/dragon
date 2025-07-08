@@ -1,4 +1,4 @@
-use crate::attention::SelfAttention;
+use crate::attention::MultiHeadAttention;
 use crate::feedforward::FeedForward;
 use crate::layernorm::LayerNorm;
 
@@ -9,17 +9,17 @@ use crate::layernorm::LayerNorm;
 pub struct DecoderBlock {
     pub ln1: LayerNorm,
     pub ln2: LayerNorm,
-    pub self_attn: SelfAttention,
+    pub self_attn: MultiHeadAttention,
     pub feedforward: FeedForward,
 }
 
 impl DecoderBlock {
     /// Creates a new [`DecoderBlock`].
-    pub fn new(embed_dim: usize, hidden_dim: usize) -> Self {
+    pub fn new(embed_dim: usize, hidden_dim: usize, num_heads: usize) -> Self {
         Self {
             ln1: LayerNorm::new(embed_dim),
             ln2: LayerNorm::new(embed_dim),
-            self_attn: SelfAttention::new(embed_dim),
+            self_attn: MultiHeadAttention::new(embed_dim, num_heads),
             feedforward: FeedForward::new(embed_dim, hidden_dim),
         }
     }
@@ -39,7 +39,7 @@ mod tests {
 
     #[test]
     fn decoder_block_forward_shape() {
-        let block = DecoderBlock::new(2, 2);
+        let block = DecoderBlock::new(2, 2, 1);
         let input = vec![vec![0.5f32, -0.5]];
         let output = block.forward(&input);
         assert_eq!(output.len(), 1);

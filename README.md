@@ -149,7 +149,7 @@ dRAGon/
 
 ### Development Progress
 
-* Implemented a naive self-attention layer in Rust (`core/src/attention.rs`) as the first step toward the full decoder.
+* Implemented an optimized multi-head self-attention layer in Rust (`core/src/attention.rs`).
 * Added a simple two-layer feedforward network (`core/src/feedforward.rs`).
 * Created a minimal decoder block chaining attention and feedforward (`core/src/decoder.rs`).
 * Introduced a simple multi-layer `Transformer` composed of decoder blocks (`core/src/transformer.rs`).
@@ -168,16 +168,18 @@ dRAGon/
 * Added a CLI to compute cross-entropy loss for a text prompt (`core/src/bin/eval_loss.rs`).
 * Added a CLI to compute perplexity for a text prompt (`core/src/bin/eval_perplexity.rs`).
 * Added optional BLAS-backed matrix multiplication via FFI (`core/src/blas.rs`).
+* Added a simple training CLI demonstrating custom autograd (`core/src/bin/train.rs`).
+* Implemented simple int8 quantization utilities for lightweight inference (`core/src/quant.rs`).
 
 ## \ud83d\udcdd Development To-Do List
 
 ### Core (Rust)
-- [ ] Replace naive attention with optimized multi-head attention
+- [x] Replace naive attention with optimized multi-head attention
 - [x] Integrate BLAS-backed matrix multiplication for speed
-- [ ] Expose FFI-friendly API for PHP integration
+- [x] Expose FFI-friendly API for PHP integration
 - [ ] Support model serialization to `.safetensors`
-- [ ] Implement optional quantization for lightweight inference
-- [ ] Add training loop using `burn` or custom autograd
+- [x] Add training loop using `burn` or custom autograd
+- [x] Implement optional quantization for lightweight inference
 
 ### Tokenizer
 - [ ] Switch from whitespace tokenizer to SentencePiece/BPE
