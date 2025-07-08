@@ -164,3 +164,4 @@ dRAGon/
 * Implemented a naive whitespace tokenizer module (`core/src/tokenizer.rs`).
 * Added a CLI to run inference directly on text input (`core/src/bin/infer_text.rs`).
 * Implemented a simple autoregressive text generation CLI (`core/src/bin/generate_text.rs`).
+* Added a cross-entropy loss module for evaluation (`core/src/loss.rs`).
