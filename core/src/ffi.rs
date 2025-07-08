@@ -85,7 +85,6 @@ pub extern "C" fn dragon_model_load(path: *const c_char) -> *mut ModelHandle {
         Err(_) => std::ptr::null_mut(),
     }
 }
-<<<<<< codex/call-rust-core-using-ffi
 #[no_mangle]
 pub extern "C" fn dragon_model_generate_inplace(
     handle: *mut ModelHandle,
@@ -117,7 +116,6 @@ pub extern "C" fn dragon_model_generate_inplace(
     current as c_ulong
 }
 
-=======
 
 /// Opaque handle wrapping a `BpeTokenizer` for FFI usage.
 #[repr(C)]
@@ -201,4 +199,3 @@ pub extern "C" fn dragon_tokenizer_encode(
     }
     count as c_ulong
 }
->>>>>> main
