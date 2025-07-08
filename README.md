@@ -185,8 +185,8 @@ dRAGon/
 
 ### Tokenizer
 - [x] Switch from whitespace tokenizer to SentencePiece/BPE
-- [ ] Provide scripts to train and update vocabularies
- - [x] Add FFI bindings so PHP can tokenize directly
+- [x] Provide scripts to train and update vocabularies
+- [x] Add FFI bindings so PHP can tokenize directly
 - [ ] Include tests for encode/decode round trips
 - [ ] Support dynamic vocabulary merges during training
 - [ ] Document tokenizer usage in `/data/tokenizer/README.md`
