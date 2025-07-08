@@ -170,6 +170,7 @@ dRAGon/
 * Added optional BLAS-backed matrix multiplication via FFI (`core/src/blas.rs`).
 * Added a simple training CLI demonstrating custom autograd (`core/src/bin/train.rs`).
 * Implemented simple int8 quantization utilities for lightweight inference (`core/src/quant.rs`).
+* Added a streaming dataset loader for large corpora (`core/src/dataset.rs`).
 
 ## \ud83d\udcdd Development To-Do List
 
@@ -198,7 +199,7 @@ dRAGon/
 - [x] Provide example client scripts (PHP and JavaScript)
 
 ### Training Pipeline
-- [ ] Build a dataset loader for large text corpora
+- [x] Build a dataset loader for large text corpora
 - [ ] Implement shuffling and batching dataloader
 - [ ] Add mixed-precision and gradient accumulation support
 - [ ] Save training checkpoints under `weights/`
