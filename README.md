@@ -188,7 +188,9 @@ dRAGon/
 - [x] Provide scripts to train and update vocabularies
 - [x] Add FFI bindings so PHP can tokenize directly
 - [x] Include tests for encode/decode round trips
-- [ ] Support dynamic vocabulary merges during training
+- [x] Support dynamic vocabulary merges during training
+- The `BpeTokenizer` now includes a `learn_merges` helper that adds new
+  merge rules from training text on the fly.
 - [ ] Document tokenizer usage in `/data/tokenizer/README.md`
 
 ### PHP API & Integration
