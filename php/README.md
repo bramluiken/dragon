@@ -2,6 +2,9 @@
 
 Entry point for dragon API.
 
+All API endpoints now emit structured JSON errors and write logs using PHP's
+`error_log` facility.
+
 ## Example clients
 
 The `examples/` directory contains small scripts that demonstrate how to call
