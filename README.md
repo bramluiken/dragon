@@ -191,7 +191,7 @@ dRAGon/
 - [x] Support dynamic vocabulary merges during training
 - The `BpeTokenizer` now includes a `learn_merges` helper that adds new
   merge rules from training text on the fly.
-- [ ] Document tokenizer usage in `/data/tokenizer/README.md`
+- [x] Document tokenizer usage in `/data/tokenizer/README.md`
 
 ### PHP API & Integration
 - [x] Implement async HTTP server with Swoole/ReactPHP
