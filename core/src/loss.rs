@@ -18,6 +18,14 @@ pub fn cross_entropy(logits: &[Vec<f32>], targets: &[usize]) -> f32 {
     loss / logits.len() as f32
 }
 
+/// Computes perplexity from logits and targets using cross-entropy loss.
+///
+/// Perplexity is defined as `exp(cross_entropy)` which corresponds to the
+/// average branching factor the model assigns to the sequence.
+pub fn perplexity(logits: &[Vec<f32>], targets: &[usize]) -> f32 {
+    cross_entropy(logits, targets).exp()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -30,5 +38,15 @@ mod tests {
         let good = cross_entropy(&logits_good, &target);
         let bad = cross_entropy(&logits_bad, &target);
         assert!(good < bad);
+    }
+
+    #[test]
+    fn perplexity_exp_loss() {
+        let logits = vec![vec![1.0f32, 0.0]];
+        let target = vec![0usize];
+        let loss = cross_entropy(&logits, &target);
+        let ppl = perplexity(&logits, &target);
+        let expected = loss.exp();
+        assert!((ppl - expected).abs() < 1e-6);
     }
 }
